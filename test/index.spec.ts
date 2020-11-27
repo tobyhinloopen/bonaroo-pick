@@ -1,4 +1,4 @@
-import { sample, set } from "lodash";
+import { pick, sample, set } from "lodash";
 import { BonarooPick } from "../src";
 
 test("new BonarooPick() with 2 props", () => {
@@ -18,6 +18,16 @@ test("new BonarooPick() with nesting props", () => {
   const fn = pick.create();
   const obj = { address: { lat: 1, lon: 2, foo: "a", bar: "2" }, name: "foo", other: "bar" };
   expect(fn(obj)).toEqual({ address: { lat: 1, lon: 2 }, name: "foo" });
+});
+
+test("new BonarooPick() with nesting props (3)", () => {
+  const pick = new BonarooPick();
+  pick.add("name");
+  pick.add("address.coords.lat");
+  pick.add("address.coords.lon");
+  const fn = pick.create();
+  const obj = { address: { coords: { lat: 1, lon: 2 }, foo: "bar" }, name: "foo", other: "bar" };
+  expect(fn(obj)).toEqual({ address: { coords: { lat: 1, lon: 2 } }, name: "foo" });
 });
 
 test("new BonarooPick() with nesting props for empty object returns empty object", () => {
@@ -49,11 +59,45 @@ test("measure performance for a lot of objects", () => {
   // warm-up
   objects.map(fn);
 
-  console.time("map using fn");
+  console.time("map using fn (nested props)");
   const newObjects = objects.map(fn);
-  console.timeEnd("map using fn");
+  console.timeEnd("map using fn (nested props)");
 
   console.log(newObjects.length);
+});
+
+
+test("measure performance for a lot of objects (no nesting, vs pick)", () => {
+  const [ props, objects ] = createPerformanceTestData({
+    amountOfPossibleProps: 200,
+    amountOfNestedKeys: 0,
+    amountOfNestedValues: 0,
+    amountOfObjectProps: 40,
+    amountOfObjects: 10000,
+  });
+
+  const bonarooPick = new BonarooPick();
+  for (const prop of props) {
+    bonarooPick.add(prop);
+  }
+
+  const fn1 = bonarooPick.create();
+  const fn2 = (obj: any) => pick(obj, props);
+
+  // warm-up
+  objects.slice(0, 100).map(fn1);
+  objects.slice(0, 100).map(fn2);
+
+  console.time("map using bonaroo-pick (no nesting)");
+  const result1 = objects.map(fn1);
+  console.timeEnd("map using bonaroo-pick (no nesting)");
+
+  console.time("map using lodash pick (no nesting)");
+  const result2 = objects.map(fn2);
+  console.timeEnd("map using lodash pick (no nesting)");
+
+  console.log(result1.length);
+  console.log(result2.length);
 });
 
 function createPerformanceTestData({

@@ -27,7 +27,7 @@ export class BonarooPick {
   public create(): (obj: any) => any {
     const body = `return ${Pick.objectLiteral(`obj`, this.props)};`;
     try {
-      console.log(body);
+      // console.log(body);
       return new Function('obj', body) as (obj: any) => any;
     } catch (error) {
       console.warn(`failed to create function:\n${error.message}\n${body}`);
@@ -46,6 +46,7 @@ export namespace Pick {
     for (const prop of Object.values(props)) {
       const valueRef = valueLiteral(objName, prop);
       code.push(`${prop.name}: ${checkPresence ? `${objName} && ${valueRef}` : valueRef}`);
+      // code.push(`${prop.name}: ${checkPresence ? `${objName} && ${valueRef}` : valueRef}`);
     }
     return `{ ${code.join(", ")} }`;
   }
@@ -56,6 +57,7 @@ export namespace Pick {
       return valueRef;
     } else if (prop.type === "child") {
       return objectLiteral(`${objName}.${prop.name}`, prop.child.props, "check-presence");
+      // return `${objName}.${prop.name} ? ${objectLiteral(`${objName}.${prop.name}`, prop.child.props)} : undefined`;
     }
   }
 }
