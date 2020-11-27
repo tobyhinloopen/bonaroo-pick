@@ -22,6 +22,7 @@ test("README test case", () => {
   const result = pick(obj);
 
   console.log(result);
+  console.log(pick.toString());
 })
 
 test("new BonarooPick() with 2 props", () => {
