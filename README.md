@@ -14,7 +14,7 @@ const pick = BonarooPick.create([
 const obj = {
   name: "Foo",
   address: {
-    city: "Foo",
+    secret: "PASSWORD",
     coords: {
       lat: 1,
       lon: 2,
