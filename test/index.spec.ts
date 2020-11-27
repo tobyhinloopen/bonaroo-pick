@@ -1,6 +1,29 @@
 import { pick, sample, set } from "lodash";
 import { BonarooPick } from "../src";
 
+test("README test case", () => {
+  const pick = BonarooPick.create([
+    "name",
+    "address.coords.lat",
+    "address.coords.lon",
+  ]);
+
+  const obj = {
+    name: "Foo",
+    address: {
+      city: "Foo",
+      coords: {
+        lat: 1,
+        lon: 2,
+      },
+    },
+  };
+
+  const result = pick(obj);
+
+  console.log(result);
+})
+
 test("new BonarooPick() with 2 props", () => {
   const pick = new BonarooPick();
   pick.add("foo");
